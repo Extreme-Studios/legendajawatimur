@@ -32,3 +32,5 @@
   .legend-showcase{grid-template-columns:1fr;grid-template-rows:auto auto;gap:20px;padding:92px 24px 60px;text-align:center;align-content:center}.legend-volume{width:min(60vw,320px);margin:auto}.legend-showcase-title{max-width:92vw;margin:auto}.legend-showcase-title h2{font-size:clamp(1.45rem,7vw,2.4rem)}.legend-showcase-title p,.legend-showcase-title small{font-size:.5rem}
   .toc-entry{font-size:clamp(.43rem,1.65vw,.62rem)!important}
 }
+
+.legend-volume,.legend-showcase-title{will-change:transform}

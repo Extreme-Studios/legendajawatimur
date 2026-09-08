@@ -79,6 +79,7 @@ function legendCover(regionIndex, legendIndex) {
   const region = catalogue.regions[regionIndex];
   const legend = region.legends[legendIndex];
   app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
+  initCoverParallax(app.querySelector('.legend-showcase'));
   document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex));
 }
 
@@ -168,4 +169,41 @@ function initLegendParallax(scene) {
   } else {
     const animate = stamp => { pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; frame = requestAnimationFrame(animate); }; frame = requestAnimationFrame(animate); disposeAncientScene = () => { cancelAnimationFrame(frame); scene.removeEventListener('pointermove', onMove); scene.removeEventListener('pointerdown', releaseMist); };
   }
+}
+
+function initCoverParallax(scene) {
+  if (!scene || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const book = scene.querySelector('.legend-volume');
+  const title = scene.querySelector('.legend-showcase-title');
+  let pointer = [0, 0];
+  let target = [0, 0];
+  let frame;
+
+  const onMove = event => {
+    const rect = scene.getBoundingClientRect();
+    target = [
+      ((event.clientX - rect.left) / rect.width - .5) * 2,
+      ((event.clientY - rect.top) / rect.height - .5) * 2
+    ];
+  };
+  const onLeave = () => { target = [0, 0]; };
+  scene.addEventListener('pointermove', onMove, { passive: true });
+  scene.addEventListener('pointerleave', onLeave, { passive: true });
+
+  const animate = stamp => {
+    if (!scene.isConnected) return;
+    pointer[0] += (target[0] - pointer[0]) * .055;
+    pointer[1] += (target[1] - pointer[1]) * .055;
+    const driftX = Math.sin(stamp * .00031) * .7;
+    const driftY = Math.cos(stamp * .00023) * .5;
+    book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg) translate(${pointer[0] * 10}px,${pointer[1] * 7}px)`;
+    title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`;
+    frame = requestAnimationFrame(animate);
+  };
+  frame = requestAnimationFrame(animate);
+  disposeAncientScene = () => {
+    cancelAnimationFrame(frame);
+    scene.removeEventListener('pointermove', onMove);
+    scene.removeEventListener('pointerleave', onLeave);
+  };
 }
