@@ -1,0 +1,5 @@
+.toc-entry{font-size:clamp(.7rem,1.25vw,1.05rem)!important}
+
+@media(max-width:700px){
+  .toc-entry{font-size:clamp(.43rem,1.65vw,.62rem)!important}
+}
