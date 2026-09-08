@@ -1,5 +1,3 @@
-import { createAncientBookScene } from './scene/AncientBookScene.js';
-
 const app = document.querySelector('#app');
 let catalogue;
 let disposeAncientScene = () => {};
@@ -29,27 +27,34 @@ function opening() {
       </div>
       <p class="sound-note">This Site Powered By <a href="https://extremestudiosai.com" target="_blank" rel="noopener noreferrer">Extreme Studios AI</a></p>
     </section>`;
-  document.querySelector('#enter').addEventListener('click', bookCover);
+  document.querySelector('#enter').addEventListener('click', ritualStill);
 }
 
-function bookCover() {
+function ritualStill() {
+  clearAncientScene();
   app.innerHTML = `
-    <section class="book-stage scene-enter">
-      <div id="ancient-book-scene" aria-label="Adegan buku kuno Legenda Jawa Timur"></div>
+    <section class="ritual-still scene-enter">
+      <img src="/ritual-book-hero.png" alt="Buku kuno Kisah Legenda Jawa Timur di atas meja ritual Jawa" />
+      <div class="ritual-still-shade"></div>
       <button class="back-button" data-back="opening">← Kembali</button>
-      <p class="instruction">Arahkan pointer ke buku, lalu klik untuk membukanya</p>
-      <aside class="book-menu" id="book-menu" hidden><p class="eyebrow">HALAMAN PERTAMA</p><h2>Daftar Daerah</h2><div id="book-menu-list"></div></aside>
+      <button class="ritual-start" id="start-book-film"><span>✦</span> Sentuh buku untuk membuka kisah</button>
     </section>`;
-  disposeAncientScene = createAncientBookScene(document.querySelector('#ancient-book-scene'), { onOpen: showBookMenu });
+  document.querySelector('#start-book-film').addEventListener('click', playBookFilm);
   bindBack();
 }
 
-function showBookMenu() {
-  const menu = document.querySelector('#book-menu');
-  if (!menu || !menu.hidden) return;
-  menu.hidden = false;
-  document.querySelector('#book-menu-list').innerHTML = catalogue.regions.map((region, index) => `<button data-region="${index}"><span>${String(index + 1).padStart(2,'0')}</span> ${esc(region.name)}</button>`).join('');
-  document.querySelectorAll('#book-menu [data-region]').forEach(button => button.addEventListener('click', () => regionPage(Number(button.dataset.region))));
+function playBookFilm() {
+  app.innerHTML = `
+    <section class="book-film scene-enter">
+      <video id="book-film-video" autoplay muted playsinline preload="auto" aria-label="Perjalanan kamera menuju buku Kisah Legenda Jawa Timur">
+        <source src="/opening-book-flow.mp4" type="video/mp4" />
+      </video>
+      <button class="back-button" data-back="book">← Kembali ke buku</button>
+      <p class="film-note">Kisah Legenda Jawa Timur</p>
+    </section>`;
+  const video = document.querySelector('#book-film-video');
+  video.addEventListener('ended', tableOfContents);
+  bindBack();
 }
 
 function tableOfContents() {
@@ -114,7 +119,7 @@ function bindBack(regionIndex) {
   document.querySelectorAll('[data-back]').forEach(button => button.addEventListener('click', () => {
     const where = button.dataset.back;
     if (where === 'opening') opening();
-    if (where === 'book') bookCover();
+    if (where === 'book') ritualStill();
     if (where === 'contents') tableOfContents();
     if (where === 'region') regionPage(regionIndex);
   }));
