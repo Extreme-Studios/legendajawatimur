@@ -62,12 +62,15 @@ function tableOfContents() {
 function regionPage(index) {
   clearAncientScene();
   const region = catalogue.regions[index];
-  const legends = region.legends.map((legend, i) => `<button class="chapter-line legend-line" data-legend="${i}"><span>${String(legend.episode).padStart(2, '0')} · ${esc(legend.title)}</span><i></i><b>→</b></button>`).join('');
-  readerLayout({
-    back: tableOfContents,
-    left: `<p class="page-kicker">BAB DAERAH</p><h2>${esc(region.name)}</h2><div class="page-rule">✦</div><p class="page-copy">Di lembar ini tersimpan ${region.legends.length} kisah dari ${esc(region.name)}. Pilih judul untuk membuka halamannya.</p><div class="page-number">${String(index + 1).padStart(2, '0')}</div>`,
-    right: `<div class="contents-heading"><p>KOLEKSI KISAH</p><h2>${esc(region.name)}</h2><div class="page-rule">✦</div></div><div class="chapter-list">${legends}</div>`
-  });
+  const midpoint = Math.ceil(region.legends.length / 2);
+  const makeEntries = (legends, offset) => legends.map((legend, localIndex) => {
+    const legendIndex = offset + localIndex;
+    return `<button class="toc-entry region-entry" data-legend="${legendIndex}" aria-label="Buka kisah ${esc(legend.title)}"><span>${String(legend.episode).padStart(2, '0')}</span><b>${esc(legend.title)}</b><i></i><em>→</em></button>`;
+  }).join('');
+  const leftEntries = makeEntries(region.legends.slice(0, midpoint), 0);
+  const rightEntries = makeEntries(region.legends.slice(midpoint), midpoint);
+  app.innerHTML = `<section class="reference-contents region-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-book-blank-v2.png" alt="Buku naskah Jawa terbuka untuk ${esc(region.name)}" /><div class="book-contents-overlay" aria-label="Daftar kisah ${esc(region.name)}"><section class="toc-page toc-page-left"><header><p>BAB DAERAH</p><h2>${esc(region.name)}</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian pertama">${leftEntries}</nav></section><section class="toc-page toc-page-right" aria-label="Kisah lanjutan ${esc(region.name)}"><header><p>${region.legends.length} KISAH LEGENDA</p><h2>LANJUTAN</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian lanjutan">${rightEntries}</nav></section></div></div></section>`;
+  document.querySelector('#reader-back').addEventListener('click', tableOfContents);
   document.querySelectorAll('[data-legend]').forEach(button => button.addEventListener('click', () => turnPage(() => legendCover(index, Number(button.dataset.legend)))));
 }
 

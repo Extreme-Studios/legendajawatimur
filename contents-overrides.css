@@ -11,6 +11,10 @@
 .toc-page-right header{transform:translateX(-15%)}
 .toc-page-left nav{transform:translateX(11%)}
 .toc-page-right nav{transform:translateX(-11%)}
+.region-contents .toc-page nav{height:62%;overflow-y:auto}
+.region-entry{align-items:start;padding-bottom:.34em}
+.region-entry b{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.26}
+.region-entry i{margin-top:.9em}
 
 @keyframes contents-crossfade{from{opacity:0}to{opacity:1}}
 @keyframes book-settle{from{opacity:0;transform:scale(.988)}to{opacity:1;transform:scale(1)}}
@@ -23,5 +27,6 @@
   .toc-page-right header{transform:translateX(-10%)}
   .toc-page-left nav{transform:translateX(7%)}
   .toc-page-right nav{transform:translateX(-7%)}
+  .region-entry{padding-bottom:.2em}
   .toc-entry{font-size:clamp(.43rem,1.65vw,.62rem)!important}
 }
