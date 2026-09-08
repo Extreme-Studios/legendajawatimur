@@ -17,7 +17,7 @@ function opening() {
   app.innerHTML = `
     <section class="opening scene-enter">
       <video class="opening-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
-        <source src="/opening-book-flow.mp4" type="video/mp4" />
+        <source src="/opening-legend-jatim.mp4" type="video/mp4" />
       </video>
       <div class="mist mist-one"></div><div class="mist mist-two"></div>
       <div class="opening-light"></div>
