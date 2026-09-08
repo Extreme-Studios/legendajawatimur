@@ -9,6 +9,8 @@
 .toc-page-right{left:55%!important}
 .toc-page-left header{transform:translateX(15%)}
 .toc-page-right header{transform:translateX(-15%)}
+.toc-page-left nav{transform:translateX(11%)}
+.toc-page-right nav{transform:translateX(-11%)}
 
 @keyframes contents-crossfade{from{opacity:0}to{opacity:1}}
 @keyframes book-settle{from{opacity:0;transform:scale(.988)}to{opacity:1;transform:scale(1)}}
@@ -19,5 +21,7 @@
   .toc-page-right{left:55.2%!important}
   .toc-page-left header{transform:translateX(10%)}
   .toc-page-right header{transform:translateX(-10%)}
+  .toc-page-left nav{transform:translateX(7%)}
+  .toc-page-right nav{transform:translateX(-7%)}
   .toc-entry{font-size:clamp(.43rem,1.65vw,.62rem)!important}
 }
