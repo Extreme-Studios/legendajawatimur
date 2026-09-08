@@ -40,74 +40,52 @@ function playBookFilm() {
     </section>`;
   const video = document.querySelector('#book-film-video');
   video.addEventListener('ended', tableOfContents);
-  bindBack();
+  document.querySelector('[data-back]').addEventListener('click', opening);
 }
 
 function tableOfContents() {
   clearAncientScene();
-  const regions = catalogue.regions.map((region, index) => `
-    <button class="region-row" data-region="${index}">
-      <span>${String(index + 1).padStart(2, '0')}</span>
-      <strong>${esc(region.name)}</strong>
-      <small>${region.legends.length} legenda</small><i>→</i>
-    </button>`).join('');
-  app.innerHTML = `
-    <section class="contents scene-enter">
-      <header><button class="back-button" data-back="book">← Tutup daftar isi</button><p class="eyebrow">BUKU I</p><h2>Daftar Isi</h2><p>Jelajahi cerita yang hidup dari setiap sudut Jawa Timur.</p></header>
-      <div class="region-list">${regions}</div>
-    </section>`;
-  document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => regionPage(Number(button.dataset.region))));
-  bindBack();
+  const regions = catalogue.regions.map((region, index) => `<button class="chapter-line" data-region="${index}"><span>Bab ${String(index + 1).padStart(2, '0')} · ${esc(region.name)}</span><i></i><b>${region.legends.length}</b></button>`).join('');
+  readerLayout({
+    back: playBookFilm,
+    left: `<div class="manuscript-mark">❖</div><p class="page-kicker">NASKAH I</p><h2>Legenda<br>Jawa Timur</h2><div class="page-rule">✦</div><p class="page-copy">Kumpulan kisah dari tanah Jawa Timur, dibuka satu demi satu seperti lembar naskah lama.</p><div class="page-rule bottom">✦</div>`,
+    right: `<div class="contents-heading"><p>TABLE OF CONTENTS</p><h2>DAFTAR ISI</h2><div class="page-rule">✦</div></div><div class="chapter-list">${regions}</div>`
+  });
+  document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => turnPage(() => regionPage(Number(button.dataset.region)))));
 }
 
 function regionPage(index) {
   clearAncientScene();
   const region = catalogue.regions[index];
-  const cards = region.legends.map((legend, i) => `
-    <button class="legend-card" data-legend="${index}:${i}">
-      <img src="${legend.cover}" alt="Cover ${esc(legend.title)}" loading="lazy" />
-      <span class="card-wash"></span><span class="episode">${String(legend.episode).padStart(2, '0')}</span>
-      <strong>${esc(legend.title)}</strong><small>Buka cover</small>
-    </button>`).join('');
-  app.innerHTML = `
-    <section class="region-page scene-enter">
-      <header class="region-header"><button class="back-button" data-back="contents">← Daftar isi</button><p class="eyebrow">BAB DAERAH</p><h2>${esc(region.name)}</h2><p>${region.legends.length} legenda untuk dijelajahi</p></header>
-      <div class="cover-grid">${cards}</div>
-    </section>`;
-  document.querySelectorAll('[data-legend]').forEach(button => button.addEventListener('click', () => {
-    const [regionIndex, legendIndex] = button.dataset.legend.split(':').map(Number);
-    legendCover(regionIndex, legendIndex);
-  }));
-  bindBack();
+  const legends = region.legends.map((legend, i) => `<button class="chapter-line legend-line" data-legend="${i}"><span>${String(legend.episode).padStart(2, '0')} · ${esc(legend.title)}</span><i></i><b>→</b></button>`).join('');
+  readerLayout({
+    back: tableOfContents,
+    left: `<p class="page-kicker">BAB DAERAH</p><h2>${esc(region.name)}</h2><div class="page-rule">✦</div><p class="page-copy">Di lembar ini tersimpan ${region.legends.length} kisah dari ${esc(region.name)}. Pilih judul untuk membuka halamannya.</p><div class="page-number">${String(index + 1).padStart(2, '0')}</div>`,
+    right: `<div class="contents-heading"><p>KOLEKSI KISAH</p><h2>${esc(region.name)}</h2><div class="page-rule">✦</div></div><div class="chapter-list">${legends}</div>`
+  });
+  document.querySelectorAll('[data-legend]').forEach(button => button.addEventListener('click', () => turnPage(() => legendCover(index, Number(button.dataset.legend)))));
 }
 
 function legendCover(regionIndex, legendIndex) {
   clearAncientScene();
   const region = catalogue.regions[regionIndex];
   const legend = region.legends[legendIndex];
-  const previous = legendIndex > 0 ? legendIndex - 1 : null;
-  const next = legendIndex < region.legends.length - 1 ? legendIndex + 1 : null;
-  app.innerHTML = `
-    <section class="legend-stage scene-enter">
-      <button class="back-button" data-back="region">← Kembali ke ${esc(region.name)}</button>
-      <div class="legend-book">
-        <div class="legend-spine"></div>
-        <img src="${legend.cover}" alt="Cover ${esc(legend.title)}" />
-      </div>
-      <div class="legend-meta"><p class="eyebrow">${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><p>Cover legenda. Cerita lengkap akan hadir di lembar buku pada edisi berikutnya.</p></div>
-      <nav class="legend-nav">${previous !== null ? `<button data-move="${previous}">← Sebelumnya</button>` : '<span></span>'}<button data-back="region">Koleksi ${esc(region.name)}</button>${next !== null ? `<button data-move="${next}">Berikutnya →</button>` : '<span></span>'}</nav>
-    </section>`;
-  document.querySelectorAll('[data-move]').forEach(button => button.addEventListener('click', () => legendCover(regionIndex, Number(button.dataset.move))));
-  bindBack(regionIndex);
+  readerLayout({
+    back: () => regionPage(regionIndex),
+    left: `<img class="story-illustration" src="${legend.cover}" alt="Ilustrasi ${esc(legend.title)}" /><p class="illustration-caption">${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p>`,
+    right: `<p class="page-kicker">LEMBAR KISAH</p><h2>${esc(legend.title)}</h2><div class="page-rule">✦</div><p class="page-copy">Lembar cerita ini telah dibuka. Naskah lengkap untuk legenda ini sedang disusun pada edisi berikutnya.</p><div class="page-number">${String(legend.episode).padStart(2, '0')}</div>`
+  });
 }
 
-function bindBack(regionIndex) {
-  document.querySelectorAll('[data-back]').forEach(button => button.addEventListener('click', () => {
-    const where = button.dataset.back;
-    if (where === 'opening') opening();
-    if (where === 'contents') tableOfContents();
-    if (where === 'region') regionPage(regionIndex);
-  }));
+function readerLayout({ left, right, back }) {
+  app.innerHTML = `<section class="reader-stage scene-enter"><div class="reader-vignette"></div><button class="back-button" id="reader-back">← Kembali</button><div class="open-manuscript"><article class="manuscript-page page-left">${left}</article><article class="manuscript-page page-right">${right}</article><div class="turning-sheet" aria-hidden="true"></div><div class="manuscript-spine"></div></div></section>`;
+  document.querySelector('#reader-back').addEventListener('click', back);
+}
+
+function turnPage(next) {
+  const sheet = document.querySelector('.turning-sheet');
+  sheet.classList.add('is-turning');
+  setTimeout(next, 540);
 }
 
 fetch('/data/legends.json').then(response => response.json()).then(data => { catalogue = data; opening(); }).catch(() => {
