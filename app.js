@@ -7,6 +7,9 @@ const flatLegends = () => catalogue.regions.flatMap(region => region.legends.map
 function opening() {
   app.innerHTML = `
     <section class="opening scene-enter">
+      <video class="opening-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+        <source src="/opening-legend-jatim.mp4" type="video/mp4" />
+      </video>
       <div class="mist mist-one"></div><div class="mist mist-two"></div>
       <div class="opening-light"></div>
       <div class="opening-copy">
@@ -15,7 +18,7 @@ function opening() {
         <p class="byline">By PARFI Jawa Timur</p>
         <button class="open-portal" id="enter">Masuk ke dalam kisah <span>→</span></button>
       </div>
-      <p class="sound-note">◌  Nyalakan suara untuk pengalaman penuh</p>
+      <p class="sound-note">◌  LEGENDA YANG HIDUP LINTAS GENERASI</p>
     </section>`;
   document.querySelector('#enter').addEventListener('click', bookCover);
 }
