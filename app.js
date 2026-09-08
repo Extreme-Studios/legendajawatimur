@@ -137,19 +137,25 @@ function initLegendParallax(scene) {
   };
   const releaseMist = event => {
     const rect = scene.getBoundingClientRect();
-    const mist = document.createElement('i');
-    mist.className = 'touch-mist';
-    mist.style.left = `${((event.clientX - rect.left) / rect.width) * 100}%`;
-    mist.style.top = `${((event.clientY - rect.top) / rect.height) * 100}%`;
-    mistLayer.append(mist);
-    mist.addEventListener('animationend', () => mist.remove(), { once: true });
+    const x = `${((event.clientX - rect.left) / rect.width) * 100}%`;
+    const y = `${((event.clientY - rect.top) / rect.height) * 100}%`;
+    [-48, -20, 11, 37].forEach((angle, index) => {
+      const mist = document.createElement('i');
+      mist.className = 'touch-wisp';
+      mist.style.left = x; mist.style.top = y;
+      mist.style.setProperty('--angle', `${angle}deg`);
+      mist.style.setProperty('--drift-x', `${(index - 1.5) * 18}px`);
+      mist.style.setProperty('--delay', `${index * 70}ms`);
+      mistLayer.append(mist);
+      mist.addEventListener('animationend', () => mist.remove(), { once: true });
+    });
   };
   scene.addEventListener('pointermove', onMove, { passive: true });
   scene.addEventListener('pointerleave', () => { target = [0, 0]; }, { passive: true });
   scene.addEventListener('pointerdown', releaseMist, { passive: true });
   if (gl) {
     const vertexSource = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
-    const fragmentSource = 'precision mediump float;uniform vec2 r;uniform float t;uniform vec2 m;float n(vec2 p){return sin(p.x)*sin(p.y);}void main(){vec2 u=gl_FragCoord.xy/r;u.x*=r.x/r.y;vec2 q=u*3.+vec2(t*.035,-t*.02);float fog=smoothstep(.16,.82,n(q+vec2(sin(t*.08),cos(t*.06))));float halo=1.-smoothstep(.04,.75,length(u-vec2(.48,.48)-m*.055));vec3 smoke=vec3(.72,.72,.67);gl_FragColor=vec4(smoke,(fog*.025+halo*.036)*(1.-length(u-vec2(.5))*.62));}';
+    const fragmentSource = 'precision mediump float;uniform vec2 r;uniform float t;uniform vec2 m;float n(vec2 p){return sin(p.x)*sin(p.y);}void main(){vec2 u=gl_FragCoord.xy/r;u.x*=r.x/r.y;vec2 q=u*3.+vec2(t*.035,-t*.02);float fog=smoothstep(.16,.82,n(q+vec2(sin(t*.08),cos(t*.06))));float halo=1.-smoothstep(.04,.75,length(u-vec2(.48,.48)-m*.055));vec3 smoke=vec3(.62,.63,.6);gl_FragColor=vec4(smoke,(fog*.004+halo*.006)*(1.-length(u-vec2(.5))*.62));}';
     const compile = (type, source) => { const shader = gl.createShader(type); gl.shaderSource(shader, source); gl.compileShader(shader); return shader; };
     const program = gl.createProgram(); gl.attachShader(program, compile(gl.VERTEX_SHADER, vertexSource)); gl.attachShader(program, compile(gl.FRAGMENT_SHADER, fragmentSource)); gl.linkProgram(program); gl.useProgram(program);
     const buffer = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buffer); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,3,-1,-1,3]), gl.STATIC_DRAW);
