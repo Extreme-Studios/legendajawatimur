@@ -1,6 +1,26 @@
 const app = document.querySelector('#app');
+const gendingAudio = document.querySelector('#gending-audio');
+const gendingToggle = document.querySelector('#gending-toggle');
 let catalogue;
 let disposeAncientScene = () => {};
+
+gendingAudio.volume = .18;
+function updateGendingControl() {
+  const playing = !gendingAudio.paused && !gendingAudio.muted;
+  gendingToggle.textContent = playing ? '♬ Gending: On' : '♬ Gending: Off';
+  gendingToggle.setAttribute('aria-pressed', String(playing));
+  gendingToggle.setAttribute('aria-label', playing ? 'Matikan musik gamelan Jawa' : 'Nyalakan musik gamelan Jawa');
+}
+function startGending() {
+  gendingAudio.muted = false;
+  gendingAudio.play().then(updateGendingControl).catch(updateGendingControl);
+}
+gendingToggle.addEventListener('click', event => {
+  event.stopPropagation();
+  if (gendingAudio.paused || gendingAudio.muted) startGending();
+  else { gendingAudio.muted = true; updateGendingControl(); }
+});
+document.addEventListener('pointerdown', startGending, { once: true, capture: true });
 
 function clearAncientScene() {
   disposeAncientScene();
