@@ -1,7 +1,6 @@
 # Gending Jawa Mistis
 
-`public/audio/gending-jawa-mistis.mp3` is **FREE "Javanese Vibes" Gamelan Music - Music for Creator** by fiikuri.
+`public/audio/gending-jawa-mistis.mp3` is the user-supplied master audio (`test.mp3`).
 
-- Duration: 2 minutes 14 seconds
-- License: Pixabay Content License
-- Source: https://pixabay.com/music/beats-free-quotjavanese-vibesquot-gamelan-music-music-for-creator-383176/
+- Duration: 5 minutes 36 seconds
+- Playback: loops continuously; loudness follows the device volume.
