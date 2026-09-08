@@ -1,13 +1,21 @@
+import { createAncientBookScene } from './scene/AncientBookScene.js';
+
 const app = document.querySelector('#app');
 let catalogue;
+let disposeAncientScene = () => {};
+
+function clearAncientScene() {
+  disposeAncientScene();
+  disposeAncientScene = () => {};
+}
 
 const esc = (value) => String(value).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const flatLegends = () => catalogue.regions.flatMap(region => region.legends.map(legend => ({ ...legend, region })));
 
 function opening() {
+  clearAncientScene();
   app.innerHTML = `
     <section class="opening scene-enter">
-      <canvas class="cinematic-webgl" aria-hidden="true"></canvas>
       <video class="opening-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
         <source src="/opening-legend-jatim.mp4" type="video/mp4" />
       </video>
@@ -21,39 +29,31 @@ function opening() {
       </div>
       <p class="sound-note">This Site Powered By <a href="https://extremestudiosai.com" target="_blank" rel="noopener noreferrer">Extreme Studios AI</a></p>
     </section>`;
-  initCinematicWebGL(document.querySelector('.opening'));
   document.querySelector('#enter').addEventListener('click', bookCover);
 }
 
 function bookCover() {
   app.innerHTML = `
     <section class="book-stage scene-enter">
-      <canvas class="cinematic-webgl" aria-hidden="true"></canvas>
-      <div class="ritual-table" aria-hidden="true"><div class="table-grain"></div><div class="sesajen sesajen-left"><i></i><b></b><span></span></div><div class="sesajen sesajen-right"><i></i><b></b><span></span></div><div class="incense-smoke smoke-left"></div><div class="incense-smoke smoke-right"></div></div>
-      <div class="stage-glow"></div>
+      <div id="ancient-book-scene" aria-label="Adegan buku kuno Legenda Jawa Timur"></div>
       <button class="back-button" data-back="opening">← Kembali</button>
-      <button class="book-object" id="open-book" aria-label="Buka buku Legenda Jawa Timur">
-        <div class="book-spine"></div>
-        <div class="book-front">
-          <div class="book-carving book-carving-top" aria-hidden="true"><span>❖</span><i></i><span>❖</span></div>
-          <div class="book-carving book-carving-left" aria-hidden="true">❖<b>✦</b>❖</div>
-          <div class="book-carving book-carving-right" aria-hidden="true">❖<b>✦</b>❖</div>
-          <div class="book-carving book-carving-bottom" aria-hidden="true"><span>❖</span><i></i><span>❖</span></div>
-          <p class="book-mark">NASKAH LEGENDA</p>
-          <p class="book-word">LEGENDA</p>
-          <p class="book-title">JAWA TIMUR</p>
-          <div class="book-ornament">✦</div>
-          <p class="book-byline">WRITTEN BY WIRALINA (PARFI JATIM)</p>
-        </div>
-      </button>
-      <p class="instruction">Klik buku untuk membuka daftar isi</p>
+      <p class="instruction">Arahkan pointer ke buku, lalu klik untuk membukanya</p>
+      <aside class="book-menu" id="book-menu" hidden><p class="eyebrow">HALAMAN PERTAMA</p><h2>Daftar Daerah</h2><div id="book-menu-list"></div></aside>
     </section>`;
-  document.querySelector('#open-book').addEventListener('click', tableOfContents);
-  initCinematicWebGL(document.querySelector('.book-stage'));
+  disposeAncientScene = createAncientBookScene(document.querySelector('#ancient-book-scene'), { onOpen: showBookMenu });
   bindBack();
 }
 
+function showBookMenu() {
+  const menu = document.querySelector('#book-menu');
+  if (!menu || !menu.hidden) return;
+  menu.hidden = false;
+  document.querySelector('#book-menu-list').innerHTML = catalogue.regions.map((region, index) => `<button data-region="${index}"><span>${String(index + 1).padStart(2,'0')}</span> ${esc(region.name)}</button>`).join('');
+  document.querySelectorAll('#book-menu [data-region]').forEach(button => button.addEventListener('click', () => regionPage(Number(button.dataset.region))));
+}
+
 function tableOfContents() {
+  clearAncientScene();
   const regions = catalogue.regions.map((region, index) => `
     <button class="region-row" data-region="${index}">
       <span>${String(index + 1).padStart(2, '0')}</span>
@@ -70,6 +70,7 @@ function tableOfContents() {
 }
 
 function regionPage(index) {
+  clearAncientScene();
   const region = catalogue.regions[index];
   const cards = region.legends.map((legend, i) => `
     <button class="legend-card" data-legend="${index}:${i}">
@@ -90,6 +91,7 @@ function regionPage(index) {
 }
 
 function legendCover(regionIndex, legendIndex) {
+  clearAncientScene();
   const region = catalogue.regions[regionIndex];
   const legend = region.legends[legendIndex];
   const previous = legendIndex > 0 ? legendIndex - 1 : null;
