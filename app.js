@@ -54,9 +54,10 @@ function tableOfContents(page = 0) {
   const previousPage = page > 0 ? `<button class="contents-prev" id="contents-prev">← Lembar sebelumnya</button>` : '';
   readerLayout({
     back: playBookFilm,
-    left: `<div class="blank-page-ornament">✦</div>`,
-    right: `<div class="contents-heading"><p>TABLE OF CONTENTS</p><h2>DAFTAR ISI</h2><div class="page-rule">✦</div></div><div class="chapter-list">${regions}</div><nav class="contents-nav">${previousPage}${nextPage}</nav>`
+    left: `<div class="title-page-ornament">❖</div><p class="page-kicker">NASKAH LEGENDA</p><h2>LEGENDA<br>JAWA TIMUR</h2><div class="page-rule">✦</div><p class="title-page-credit">WRITTEN BY WIRALINA (PARFI JATIM)</p><div class="page-rule bottom">✦</div>`,
+    right: `<div class="contents-heading"><p>TABLE OF CONTENTS</p><h2>DAFTAR ISI</h2><div class="page-rule">✦</div></div><div class="chapter-list"></div><nav class="contents-nav">${previousPage}${nextPage}</nav>`
   });
+  document.querySelector('.chapter-list').innerHTML = regions;
   document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => turnPage(() => regionPage(Number(button.dataset.region)))));
   document.querySelector('#contents-next')?.addEventListener('click', () => turnPage(() => tableOfContents(page + 1)));
   document.querySelector('#contents-prev')?.addEventListener('click', () => turnPage(() => tableOfContents(page - 1)));
