@@ -4,10 +4,10 @@ const gendingToggle = document.querySelector('#gending-toggle');
 let catalogue;
 let disposeAncientScene = () => {};
 
-gendingAudio.volume = .18;
+gendingAudio.volume = .38;
 function updateGendingControl() {
   const playing = !gendingAudio.paused && !gendingAudio.muted;
-  gendingToggle.textContent = playing ? '♬ Gending: On' : '♬ Gending: Off';
+  gendingToggle.textContent = playing ? '♫' : '♪';
   gendingToggle.setAttribute('aria-pressed', String(playing));
   gendingToggle.setAttribute('aria-label', playing ? 'Matikan musik gamelan Jawa' : 'Nyalakan musik gamelan Jawa');
 }

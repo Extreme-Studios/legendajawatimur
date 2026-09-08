@@ -35,5 +35,5 @@
 
 .legend-volume,.legend-showcase-title{will-change:transform}
 
-.gending-toggle{position:fixed;z-index:40;right:24px;bottom:22px;border:1px solid #c59a52a8;border-radius:999px;padding:10px 14px;background:#120b07bd;color:#e7c77f;box-shadow:0 5px 20px #0009;backdrop-filter:blur(8px);font:600 .65rem/1 "DM Sans",sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s ease,color .2s ease,transform .2s ease}.gending-toggle:hover{background:#281807e8;color:#ffe3a2;transform:translateY(-2px)}
-@media(max-width:640px){.gending-toggle{right:14px;bottom:14px;padding:9px 12px;font-size:.56rem}}
+.gending-toggle{position:fixed;z-index:40;right:24px;bottom:22px;width:42px;height:42px;border:1px solid #c59a52a8;border-radius:50%;padding:0;background:#120b07bd;color:#e7c77f;box-shadow:0 5px 20px #0009;backdrop-filter:blur(8px);font:700 1.1rem/1 "DM Sans",sans-serif;cursor:pointer;transition:background .2s ease,color .2s ease,transform .2s ease}.gending-toggle:hover{background:#281807e8;color:#ffe3a2;transform:translateY(-2px)}
+@media(max-width:640px){.gending-toggle{right:14px;bottom:14px;width:38px;height:38px;font-size:1rem}}
