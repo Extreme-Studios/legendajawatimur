@@ -1,13 +1,7 @@
-# Gending Jawa Ambient
+# Gending Jawa Mistis
 
-`public/audio/gending-jawa-ambient.ogg` is a low-volume ambient loop assembled from the Casa da Música Javanese Gamelan sample library by Digitópia / Casa da Música:
+`public/audio/gending-jawa-mistis.mp3` is **FREE "Javanese Vibes" Gamelan Music - Music for Creator** by fiikuri.
 
-- Bonang BBPL3
-- Gong GKPL3f
-
-Source material is licensed under the Artistic License 2.0.
-
-Source pages:
-
-- https://commons.wikimedia.org/wiki/File:Bonang_BBPL3_(Casa_da_Musica%27s_Javanese_gamelan).ogg
-- https://commons.wikimedia.org/wiki/File:Gong_GKPL3f_(Casa_da_Musica%27s_Javanese_gamelan).ogg
+- Duration: 2 minutes 14 seconds
+- License: Pixabay Content License
+- Source: https://pixabay.com/music/beats-free-quotjavanese-vibesquot-gamelan-music-music-for-creator-383176/
