@@ -27,20 +27,7 @@ function opening() {
       </div>
       <p class="sound-note">This Site Powered By <a href="https://extremestudiosai.com" target="_blank" rel="noopener noreferrer">Extreme Studios AI</a></p>
     </section>`;
-  document.querySelector('#enter').addEventListener('click', ritualStill);
-}
-
-function ritualStill() {
-  clearAncientScene();
-  app.innerHTML = `
-    <section class="ritual-still scene-enter">
-      <img src="/ritual-book-hero.png" alt="Buku kuno Kisah Legenda Jawa Timur di atas meja ritual Jawa" />
-      <div class="ritual-still-shade"></div>
-      <button class="back-button" data-back="opening">← Kembali</button>
-      <button class="ritual-start" id="start-book-film"><span>✦</span> Sentuh buku untuk membuka kisah</button>
-    </section>`;
-  document.querySelector('#start-book-film').addEventListener('click', playBookFilm);
-  bindBack();
+  document.querySelector('#enter').addEventListener('click', playBookFilm);
 }
 
 function playBookFilm() {
@@ -49,8 +36,7 @@ function playBookFilm() {
       <video id="book-film-video" autoplay muted playsinline preload="auto" aria-label="Perjalanan kamera menuju buku Kisah Legenda Jawa Timur">
         <source src="/opening-book-flow.mp4" type="video/mp4" />
       </video>
-      <button class="back-button" data-back="book">← Kembali ke buku</button>
-      <p class="film-note">Kisah Legenda Jawa Timur</p>
+      <button class="back-button" data-back="opening">← Kembali</button>
     </section>`;
   const video = document.querySelector('#book-film-video');
   video.addEventListener('ended', tableOfContents);
@@ -119,7 +105,6 @@ function bindBack(regionIndex) {
   document.querySelectorAll('[data-back]').forEach(button => button.addEventListener('click', () => {
     const where = button.dataset.back;
     if (where === 'opening') opening();
-    if (where === 'book') ritualStill();
     if (where === 'contents') tableOfContents();
     if (where === 'region') regionPage(regionIndex);
   }));
