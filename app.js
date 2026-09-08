@@ -39,7 +39,10 @@ function playBookFilm() {
       <button class="back-button" data-back="opening">← Kembali</button>
     </section>`;
   const video = document.querySelector('#book-film-video');
-  video.addEventListener('ended', tableOfContents);
+  video.addEventListener('ended', () => {
+    video.classList.add('film-fade-out');
+    setTimeout(tableOfContents, 440);
+  });
   document.querySelector('[data-back]').addEventListener('click', opening);
 }
 
