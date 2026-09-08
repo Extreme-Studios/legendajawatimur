@@ -15,7 +15,7 @@ function opening() {
       <div class="opening-copy">
         <p class="eyebrow">SEBUAH PERJALANAN MENEMBUS WAKTU</p>
         <h1>LEGENDA<br><em>JAWA TIMUR</em></h1>
-        <p class="byline">By PARFI Jawa Timur</p>
+        <p class="byline">Written By WIRALINA (PARFI JATIM)</p>
         <button class="open-portal" id="enter">Masuk ke dalam kisah <span>→</span></button>
       </div>
       <p class="sound-note">◌  LEGENDA YANG HIDUP LINTAS GENERASI</p>
@@ -35,7 +35,7 @@ function bookCover() {
           <p class="book-word">LEGENDA</p>
           <p class="book-title">JAWA<br>TIMUR</p>
           <div class="book-ornament">✦</div>
-          <p class="book-byline">BY PARFI JAWA TIMUR</p>
+          <p class="book-byline">WRITTEN BY WIRALINA (PARFI JATIM)</p>
         </div>
       </button>
       <p class="instruction">Klik buku untuk membuka daftar isi</p>
