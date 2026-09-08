@@ -18,7 +18,7 @@ function opening() {
         <p class="byline">Written By WIRALINA (PARFI JATIM)</p>
         <button class="open-portal" id="enter">Masuk ke dalam kisah <span>→</span></button>
       </div>
-      <p class="sound-note">◌  LEGENDA YANG HIDUP LINTAS GENERASI</p>
+      <p class="sound-note">This Site Powered By <a href="https://extremestudiosai.com" target="_blank" rel="noopener noreferrer">Extreme Studios AI</a></p>
     </section>`;
   document.querySelector('#enter').addEventListener('click', bookCover);
 }
