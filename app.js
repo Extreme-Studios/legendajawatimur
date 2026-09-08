@@ -34,7 +34,7 @@ function playBookFilm() {
   app.innerHTML = `
     <section class="book-film scene-enter">
       <video id="book-film-video" autoplay muted playsinline preload="auto" aria-label="Perjalanan kamera menuju buku Kisah Legenda Jawa Timur">
-        <source src="/opening-book-flow.mp4" type="video/mp4" />
+        <source src="/opening-book-blank-flow.mp4" type="video/mp4" />
       </video>
       <button class="back-button" data-back="opening">← Kembali</button>
     </section>`;
@@ -45,10 +45,13 @@ function playBookFilm() {
 
 function tableOfContents() {
   clearAncientScene();
-  const regions = catalogue.regions.slice(0, 15).map((region, index) => {
-    return `<button class="reference-chapter" style="--row:${index}" data-region="${index}" aria-label="Buka Bab ${String(index + 1).padStart(2, '0')}: ${esc(region.name)}"></button>`;
+  const makeEntries = (regions, start) => regions.map((region, offset) => {
+    const index = start + offset;
+    return `<button class="toc-entry" data-region="${index}" aria-label="Buka Bab ${String(index + 1).padStart(2, '0')}: ${esc(region.name)}"><span>${String(index + 1).padStart(2, '0')}</span><b>${esc(region.name)}</b><i></i><em>${String(index + 7).padStart(2, '0')}</em></button>`;
   }).join('');
-  app.innerHTML = `<section class="reference-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><video src="/contents-daftar-isi-flow.mp4" autoplay muted loop playsinline preload="auto" aria-label="Buku naskah terbuka dengan Daftar Isi Legenda Jawa Timur"></video>${regions}</div></section>`;
+  const leftEntries = makeEntries(catalogue.regions.slice(0, 15), 0);
+  const rightEntries = makeEntries(catalogue.regions.slice(15, 30), 15);
+  app.innerHTML = `<section class="reference-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><video src="/opening-book-blank-flow.mp4" autoplay muted loop playsinline preload="auto" aria-label="Buku naskah Jawa terbuka"></video><div class="book-contents-overlay" aria-label="Daftar Isi Legenda Jawa Timur"><section class="toc-page toc-page-left"><header><p>NASKAH LEGENDA</p><h2>DAFTAR ISI</h2><div>✦</div></header><nav>${leftEntries}</nav></section><section class="toc-page toc-page-right" aria-label="Daftar isi lanjutan"><header><p>JAWA TIMUR</p><h2>DAFTAR ISI</h2><div>✦</div></header><nav>${rightEntries}</nav></section></div></div></section>`;
   document.querySelector('#reader-back').addEventListener('click', playBookFilm);
   document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => turnPage(() => regionPage(Number(button.dataset.region)))));
 }

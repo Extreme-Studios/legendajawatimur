@@ -1,0 +1,7 @@
+Asset target: /opening-book-blank-flow.mp4
+
+The landing CTA opens this video fullscreen. When playback ends, the website keeps the open-book state by rendering the same video in a muted loop and adds the interactive HTML/CSS overlay above the exact page areas.
+
+To replace the Flow result later, export the 720p MP4 from Flow and overwrite only /opening-book-blank-flow.mp4. Keep the video landscape at 16:9. The end frame must be an overhead shot of an opened book with blank cream pages; do not generate any table-of-contents text in Flow.
+
+The list is rendered from data/legends.json. The first 15 regions are placed on the left page and regions 16–30 on the right page. Each row is a semantic button that opens its own region page with the existing page-turn transition.
