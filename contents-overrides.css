@@ -15,6 +15,7 @@
 .region-entry{align-items:start;padding-bottom:.34em}
 .region-entry b{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.26}
 .region-entry i{margin-top:.9em}
+.legend-showcase{min-height:100svh;position:relative;display:grid;grid-template-columns:minmax(250px,36vw) minmax(280px,38vw);align-items:center;justify-content:center;gap:clamp(26px,6vw,100px);overflow:hidden;background:#120904}.legend-ritual-table{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.58) saturate(.78);transform:scale(1.025)}.legend-showcase-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 37% 51%,transparent 5%,#09040144 45%,#070301c7 100%),linear-gradient(90deg,#080402bb 0%,transparent 52%,#08040299 100%)}.legend-showcase .back-button{z-index:5}.legend-volume{position:relative;z-index:2;width:min(32vw,390px);aspect-ratio:2/3;transform:perspective(1450px) rotateY(-15deg) rotateZ(1.2deg);filter:drop-shadow(24px 31px 25px #000c);transition:transform .5s ease}.legend-volume:hover{transform:perspective(1450px) rotateY(-8deg) rotateZ(.3deg) translateY(-7px)}.legend-volume-spine{position:absolute;z-index:0;left:-7%;top:1%;height:98%;width:12%;border-radius:5px 0 0 5px;background:linear-gradient(90deg,#110905,#4a2c12 33%,#a57835 60%,#241306);transform:skewY(-8deg);box-shadow:inset 3px 0 6px #c6995044}.legend-volume-cover{position:absolute;z-index:1;inset:0;width:100%;height:100%;object-fit:cover;border:1px solid #bd9551;box-shadow:inset 0 0 0 7px #160d07,inset 0 0 0 9px #af8240}.legend-showcase-title{position:relative;z-index:2;max-width:590px;color:#edcf8a;text-shadow:0 3px 15px #000}.legend-showcase-title p,.legend-showcase-title small{display:block;margin:0;color:#d3aa60;font:600 clamp(.55rem,.78vw,.75rem) "DM Sans",sans-serif;letter-spacing:.17em;text-transform:uppercase}.legend-showcase-title h2{margin:13px 0 16px;font:600 clamp(2rem,4vw,4.6rem)/1.04 Cinzel,Georgia,serif;color:#f0d79e}.legend-showcase-title div{color:#d3aa60;font-size:1.25rem;letter-spacing:.55em;margin:0 0 17px}.legend-showcase-title small{color:#e3c37d;opacity:.78}
 
 @keyframes contents-crossfade{from{opacity:0}to{opacity:1}}
 @keyframes book-settle{from{opacity:0;transform:scale(.988)}to{opacity:1;transform:scale(1)}}
@@ -28,5 +29,6 @@
   .toc-page-left nav{transform:translateX(7%)}
   .toc-page-right nav{transform:translateX(-7%)}
   .region-entry{padding-bottom:.2em}
+  .legend-showcase{grid-template-columns:1fr;grid-template-rows:auto auto;gap:20px;padding:92px 24px 60px;text-align:center;align-content:center}.legend-volume{width:min(60vw,320px);margin:auto}.legend-showcase-title{max-width:92vw;margin:auto}.legend-showcase-title h2{font-size:clamp(1.45rem,7vw,2.4rem)}.legend-showcase-title p,.legend-showcase-title small{font-size:.5rem}
   .toc-entry{font-size:clamp(.43rem,1.65vw,.62rem)!important}
 }

@@ -78,11 +78,8 @@ function legendCover(regionIndex, legendIndex) {
   clearAncientScene();
   const region = catalogue.regions[regionIndex];
   const legend = region.legends[legendIndex];
-  readerLayout({
-    back: () => regionPage(regionIndex),
-    left: `<img class="story-illustration" src="${legend.cover}" alt="Ilustrasi ${esc(legend.title)}" /><p class="illustration-caption">${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p>`,
-    right: `<p class="page-kicker">LEMBAR KISAH</p><h2>${esc(legend.title)}</h2><div class="page-rule">✦</div><p class="page-copy">Lembar cerita ini telah dibuka. Naskah lengkap untuk legenda ini sedang disusun pada edisi berikutnya.</p><div class="page-number">${String(legend.episode).padStart(2, '0')}</div>`
-  });
+  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
+  document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex));
 }
 
 function readerLayout({ left, right, back }) {
