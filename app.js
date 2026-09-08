@@ -43,24 +43,14 @@ function playBookFilm() {
   document.querySelector('[data-back]').addEventListener('click', opening);
 }
 
-function tableOfContents(page = 0) {
+function tableOfContents() {
   clearAncientScene();
-  const start = page * 15;
-  const regions = catalogue.regions.slice(start, start + 15).map((region, offset) => {
-    const index = start + offset;
-    return `<button class="chapter-line" data-region="${index}"><span>Bab ${String(index + 1).padStart(2, '0')} · ${esc(region.name)}</span><i></i><b>${String(index + 1).padStart(2, '0')}</b></button>`;
+  const regions = catalogue.regions.slice(0, 15).map((region, index) => {
+    return `<button class="reference-chapter" style="--row:${offset}" data-region="${index}" aria-label="Buka Bab ${String(index + 1).padStart(2, '0')}: ${esc(region.name)}"></button>`;
   }).join('');
-  const nextPage = catalogue.regions.length > start + 15 ? `<button class="contents-next" id="contents-next">Lembar berikutnya →</button>` : '';
-  const previousPage = page > 0 ? `<button class="contents-prev" id="contents-prev">← Lembar sebelumnya</button>` : '';
-  readerLayout({
-    back: playBookFilm,
-    left: `<div class="title-page-ornament">❖</div><p class="page-kicker">NASKAH LEGENDA</p><h2>LEGENDA<br>JAWA TIMUR</h2><div class="page-rule">✦</div><p class="title-page-credit">WRITTEN BY WIRALINA (PARFI JATIM)</p><div class="page-rule bottom">✦</div>`,
-    right: `<div class="contents-heading"><p>TABLE OF CONTENTS</p><h2>DAFTAR ISI</h2><div class="page-rule">✦</div></div><div class="chapter-list"></div><nav class="contents-nav">${previousPage}${nextPage}</nav>`
-  });
-  document.querySelector('.chapter-list').innerHTML = regions;
+  app.innerHTML = `<section class="reference-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-reference-clean.png" alt="Buku naskah terbuka dengan Daftar Isi Legenda Jawa Timur" />${regions}</div></section>`;
+  document.querySelector('#reader-back').addEventListener('click', playBookFilm);
   document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => turnPage(() => regionPage(Number(button.dataset.region)))));
-  document.querySelector('#contents-next')?.addEventListener('click', () => turnPage(() => tableOfContents(page + 1)));
-  document.querySelector('#contents-prev')?.addEventListener('click', () => turnPage(() => tableOfContents(page - 1)));
 }
 
 function regionPage(index) {
@@ -93,6 +83,7 @@ function readerLayout({ left, right, back }) {
 
 function turnPage(next) {
   const sheet = document.querySelector('.turning-sheet');
+  if (!sheet) { next(); return; }
   sheet.classList.add('is-turning');
   setTimeout(next, 540);
 }
