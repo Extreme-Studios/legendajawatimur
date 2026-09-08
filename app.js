@@ -46,9 +46,9 @@ function playBookFilm() {
 function tableOfContents() {
   clearAncientScene();
   const regions = catalogue.regions.slice(0, 15).map((region, index) => {
-    return `<button class="reference-chapter" style="--row:${offset}" data-region="${index}" aria-label="Buka Bab ${String(index + 1).padStart(2, '0')}: ${esc(region.name)}"></button>`;
+    return `<button class="reference-chapter" style="--row:${index}" data-region="${index}" aria-label="Buka Bab ${String(index + 1).padStart(2, '0')}: ${esc(region.name)}"></button>`;
   }).join('');
-  app.innerHTML = `<section class="reference-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-reference-clean.png" alt="Buku naskah terbuka dengan Daftar Isi Legenda Jawa Timur" />${regions}</div></section>`;
+  app.innerHTML = `<section class="reference-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><video src="/contents-daftar-isi-flow.mp4" autoplay muted loop playsinline preload="auto" aria-label="Buku naskah terbuka dengan Daftar Isi Legenda Jawa Timur"></video>${regions}</div></section>`;
   document.querySelector('#reader-back').addEventListener('click', playBookFilm);
   document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => turnPage(() => regionPage(Number(button.dataset.region)))));
 }
