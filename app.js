@@ -78,7 +78,7 @@ function legendCover(regionIndex, legendIndex) {
   clearAncientScene();
   const region = catalogue.regions[regionIndex];
   const legend = region.legends[legendIndex];
-  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><canvas class="legend-webgl" aria-hidden="true"></canvas><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Geser kursor untuk menyusuri cover</small></div></section>`;
+  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><canvas class="legend-webgl" aria-hidden="true"></canvas><div class="touch-mist-layer" aria-hidden="true"></div><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Sentuh layar untuk membuyarkan kabut</small></div></section>`;
   initLegendParallax(app.querySelector('.legend-showcase'));
   document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex));
 }
@@ -126,6 +126,7 @@ function initCinematicWebGL(scene) {
 function initLegendParallax(scene) {
   if (!scene || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const canvas = scene.querySelector('.legend-webgl');
+  const mistLayer = scene.querySelector('.touch-mist-layer');
   const book = scene.querySelector('.legend-volume');
   const title = scene.querySelector('.legend-showcase-title');
   const gl = canvas?.getContext('webgl', { alpha: true, antialias: false });
@@ -134,8 +135,18 @@ function initLegendParallax(scene) {
     const rect = scene.getBoundingClientRect();
     target = [((event.clientX - rect.left) / rect.width - .5) * 2, ((event.clientY - rect.top) / rect.height - .5) * 2];
   };
+  const releaseMist = event => {
+    const rect = scene.getBoundingClientRect();
+    const mist = document.createElement('i');
+    mist.className = 'touch-mist';
+    mist.style.left = `${((event.clientX - rect.left) / rect.width) * 100}%`;
+    mist.style.top = `${((event.clientY - rect.top) / rect.height) * 100}%`;
+    mistLayer.append(mist);
+    mist.addEventListener('animationend', () => mist.remove(), { once: true });
+  };
   scene.addEventListener('pointermove', onMove, { passive: true });
   scene.addEventListener('pointerleave', () => { target = [0, 0]; }, { passive: true });
+  scene.addEventListener('pointerdown', releaseMist, { passive: true });
   if (gl) {
     const vertexSource = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
     const fragmentSource = 'precision mediump float;uniform vec2 r;uniform float t;uniform vec2 m;float n(vec2 p){return sin(p.x)*sin(p.y);}void main(){vec2 u=gl_FragCoord.xy/r;u.x*=r.x/r.y;vec2 q=u*3.+vec2(t*.035,-t*.02);float fog=smoothstep(.16,.82,n(q+vec2(sin(t*.08),cos(t*.06))));float halo=1.-smoothstep(.04,.75,length(u-vec2(.48,.48)-m*.055));vec3 amber=vec3(.82,.47,.13);gl_FragColor=vec4(amber,(fog*.028+halo*.045)*(1.-length(u-vec2(.5))*.62));}';
@@ -146,10 +157,10 @@ function initLegendParallax(scene) {
     const resolution = gl.getUniformLocation(program, 'r'), time = gl.getUniformLocation(program, 't'), mouse = gl.getUniformLocation(program, 'm');
     const resize = () => { const dpr = Math.min(devicePixelRatio, 1.5); canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr; gl.viewport(0, 0, canvas.width, canvas.height); };
     addEventListener('resize', resize); resize();
-    disposeAncientScene = () => { cancelAnimationFrame(frame); removeEventListener('resize', resize); scene.removeEventListener('pointermove', onMove); gl.getExtension('WEBGL_lose_context')?.loseContext(); };
+    disposeAncientScene = () => { cancelAnimationFrame(frame); removeEventListener('resize', resize); scene.removeEventListener('pointermove', onMove); scene.removeEventListener('pointerdown', releaseMist); gl.getExtension('WEBGL_lose_context')?.loseContext(); };
     const render = stamp => { if (!scene.isConnected) return; pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg) translate(${pointer[0] * 10}px,${pointer[1] * 7}px)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; gl.uniform2f(resolution, canvas.width, canvas.height); gl.uniform1f(time, stamp * .001); gl.uniform2f(mouse, pointer[0], pointer[1]); gl.drawArrays(gl.TRIANGLES, 0, 3); frame = requestAnimationFrame(render); };
     frame = requestAnimationFrame(render);
   } else {
-    const animate = stamp => { pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; frame = requestAnimationFrame(animate); }; frame = requestAnimationFrame(animate); disposeAncientScene = () => { cancelAnimationFrame(frame); scene.removeEventListener('pointermove', onMove); };
+    const animate = stamp => { pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; frame = requestAnimationFrame(animate); }; frame = requestAnimationFrame(animate); disposeAncientScene = () => { cancelAnimationFrame(frame); scene.removeEventListener('pointermove', onMove); scene.removeEventListener('pointerdown', releaseMist); };
   }
 }
