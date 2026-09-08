@@ -78,8 +78,7 @@ function legendCover(regionIndex, legendIndex) {
   clearAncientScene();
   const region = catalogue.regions[regionIndex];
   const legend = region.legends[legendIndex];
-  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><canvas class="legend-webgl" aria-hidden="true"></canvas><div class="touch-mist-layer" aria-hidden="true"></div><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Sentuh layar untuk membuyarkan kabut</small></div></section>`;
-  initLegendParallax(app.querySelector('.legend-showcase'));
+  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
   document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex));
 }
 
