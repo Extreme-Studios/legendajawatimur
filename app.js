@@ -4,7 +4,7 @@ const gendingToggle = document.querySelector('#gending-toggle');
 let catalogue;
 let disposeAncientScene = () => {};
 
-gendingAudio.volume = .38;
+gendingAudio.volume = 1;
 function updateGendingControl() {
   const playing = !gendingAudio.paused && !gendingAudio.muted;
   gendingToggle.textContent = playing ? '♫' : '♪';
