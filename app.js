@@ -66,16 +66,24 @@ function playBookFilm() {
   document.querySelector('[data-back]').addEventListener('click', opening);
 }
 
-function tableOfContents() {
+function tableOfContents(page = 0) {
   clearAncientScene();
   const makeEntries = (regions, start) => regions.map((region, offset) => {
     const index = start + offset;
     return `<button class="toc-entry" data-region="${index}" aria-label="Buka Bab ${String(index + 1).padStart(2, '0')}: ${esc(region.name)}"><span>${String(index + 1).padStart(2, '0')}</span><b>${esc(region.name)}</b><i></i><em>${String(index + 7).padStart(2, '0')}</em></button>`;
   }).join('');
-  const leftEntries = makeEntries(catalogue.regions.slice(0, 15), 0);
-  const rightEntries = makeEntries(catalogue.regions.slice(15, 30), 15);
-  app.innerHTML = `<section class="reference-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-book-blank-v2.png" alt="Buku naskah Jawa terbuka dengan halaman kosong" /><div class="book-contents-overlay" aria-label="Daftar Isi Legenda Jawa Timur"><section class="toc-page toc-page-left"><header><p>NASKAH LEGENDA</p><h2>DAFTAR ISI</h2><div>✦</div></header><nav aria-label="Daftar daerah 1 sampai 15">${leftEntries}</nav></section><section class="toc-page toc-page-right" aria-label="Daftar isi lanjutan"><header><p>JAWA TIMUR</p><h2>LANJUTAN</h2><div>✦</div></header><nav aria-label="Daftar daerah 16 sampai 30">${rightEntries}</nav></section></div></div></section>`;
-  document.querySelector('#reader-back').addEventListener('click', playBookFilm);
+  const start = page * 30;
+  const leftEntries = makeEntries(catalogue.regions.slice(start, start + 15), start);
+  const rightEntries = makeEntries(catalogue.regions.slice(start + 15, start + 30), start + 15);
+  app.innerHTML = `<section class="reference-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-book-blank-v2.png" alt="Buku naskah Jawa terbuka dengan halaman kosong" /><div class="book-contents-overlay" aria-label="Daftar Isi Legenda Jawa Timur"><section class="toc-page toc-page-left"><header><p>NASKAH LEGENDA</p><h2>DAFTAR ISI</h2><div>✦</div></header><nav aria-label="Daftar daerah ${start + 1} sampai ${Math.min(start + 15, catalogue.regions.length)}">${leftEntries}</nav></section><section class="toc-page toc-page-right" aria-label="Daftar isi lanjutan"><header><p>JAWA TIMUR</p><h2>LANJUTAN</h2><div>✦</div></header><nav aria-label="Daftar daerah lanjutan">${rightEntries}</nav></section></div></div></section>`;
+  document.querySelector('#reader-back').addEventListener('click', page > 0 ? () => tableOfContents(page - 1) : playBookFilm);
+  if (start + 30 < catalogue.regions.length) {
+    const button = document.createElement('button');
+    button.className = 'additional-legends-button';
+    button.textContent = 'Daerah lainnya →';
+    button.addEventListener('click', () => turnPage(() => tableOfContents(page + 1)));
+    app.querySelector('.reference-contents').append(button);
+  }
   document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => turnPage(() => regionPage(Number(button.dataset.region)))));
 }
 
@@ -91,7 +99,7 @@ function regionPage(index, additional = false) {
   const leftEntries = makeEntries(legends.slice(0, midpoint), 0);
   const rightEntries = makeEntries(legends.slice(midpoint), midpoint);
   app.innerHTML = `<section class="reference-contents region-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-book-blank-v2.png" alt="Buku naskah Jawa terbuka untuk ${esc(region.name)}" /><div class="book-contents-overlay" aria-label="Daftar kisah ${esc(region.name)}"><section class="toc-page toc-page-left"><header><p>${additional ? 'KISAH TAMBAHAN' : 'BAB DAERAH'}</p><h2>${esc(region.name)}</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian pertama">${leftEntries}</nav></section><section class="toc-page toc-page-right" aria-label="Kisah lanjutan ${esc(region.name)}"><header><p>${legends.length} KISAH LEGENDA</p><h2>LANJUTAN</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian lanjutan">${rightEntries}</nav></section></div></div></section>`;
-  document.querySelector('#reader-back').addEventListener('click', additional ? () => regionPage(index) : tableOfContents);
+  document.querySelector('#reader-back').addEventListener('click', additional ? () => regionPage(index) : () => tableOfContents(Math.floor(index / 30)));
   if (!additional && region.additionalLegends?.length) {
     const button = document.createElement('button');
     button.className = 'additional-legends-button';
@@ -106,7 +114,7 @@ function legendCover(regionIndex, legendIndex, additional = false) {
   clearAncientScene();
   const region = catalogue.regions[regionIndex];
   const legend = (additional ? region.additionalLegends : region.legends)[legendIndex];
-  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · ${additional ? 'KISAH TAMBAHAN' : `LEGENDA ${String(legend.episode).padStart(2, '0')}`} </p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
+  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(legend.area || region.name)} · ${additional ? 'KISAH TAMBAHAN' : `LEGENDA ${String(legend.episode).padStart(2, '0')}`} </p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
   initCoverParallax(app.querySelector('.legend-showcase'));
   document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex, additional));
   if (legend.manuscriptUrl) {
@@ -212,10 +220,10 @@ function initLegendParallax(scene) {
     const resize = () => { const dpr = Math.min(devicePixelRatio, 1.5); canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr; gl.viewport(0, 0, canvas.width, canvas.height); };
     addEventListener('resize', resize); resize();
     disposeAncientScene = () => { cancelAnimationFrame(frame); removeEventListener('resize', resize); scene.removeEventListener('pointermove', onMove); scene.removeEventListener('pointerdown', releaseMist); gl.getExtension('WEBGL_lose_context')?.loseContext(); };
-    const render = stamp => { if (!scene.isConnected) return; pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg) translate(${pointer[0] * 10}px,${pointer[1] * 7}px)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; gl.uniform2f(resolution, canvas.width, canvas.height); gl.uniform1f(time, stamp * .001); gl.uniform2f(mouse, pointer[0], pointer[1]); gl.drawArrays(gl.TRIANGLES, 0, 3); frame = requestAnimationFrame(render); };
+    const render = stamp => { if (!scene.isConnected) return; pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg) translate(${pointer[0] * 10}px,${pointer[1] * 7}px)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; gl.uniform2f(resolution, canvas.width, canvas.height); gl.uniform1f(time, stamp * .001); gl.uniform2f(mouse, pointer[0], pointer[1]); gl.drawArrays(gl.TRIANGLES, 0, 3); frame = requestAnimationFrame(render); };
     frame = requestAnimationFrame(render);
   } else {
-    const animate = stamp => { pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; frame = requestAnimationFrame(animate); }; frame = requestAnimationFrame(animate); disposeAncientScene = () => { cancelAnimationFrame(frame); scene.removeEventListener('pointermove', onMove); scene.removeEventListener('pointerdown', releaseMist); };
+    const animate = stamp => { pointer[0] += (target[0] - pointer[0]) * .055; pointer[1] += (target[1] - pointer[1]) * .055; const driftX = Math.sin(stamp * .00031) * .7, driftY = Math.cos(stamp * .00023) * .5; book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg)`; title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`; frame = requestAnimationFrame(animate); }; frame = requestAnimationFrame(animate); disposeAncientScene = () => { cancelAnimationFrame(frame); scene.removeEventListener('pointermove', onMove); scene.removeEventListener('pointerdown', releaseMist); };
   }
 }
 
@@ -244,7 +252,7 @@ function initCoverParallax(scene) {
     pointer[1] += (target[1] - pointer[1]) * .055;
     const driftX = Math.sin(stamp * .00031) * .7;
     const driftY = Math.cos(stamp * .00023) * .5;
-    book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateX(${pointer[1] * -3 + driftY}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg) translate(${pointer[0] * 10}px,${pointer[1] * 7}px)`;
+    book.style.transform = `perspective(1450px) rotateY(${-15 + pointer[0] * 5 + driftX}deg) rotateZ(${1.2 + pointer[0] * .8 + driftX * .15}deg) translate(${pointer[0] * 10}px,${pointer[1] * 7}px)`;
     title.style.transform = `translate(${pointer[0] * -12 + driftX * -2}px,${pointer[1] * -7 + driftY * -2}px)`;
     frame = requestAnimationFrame(animate);
   };
