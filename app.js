@@ -79,47 +79,56 @@ function tableOfContents() {
   document.querySelectorAll('[data-region]').forEach(button => button.addEventListener('click', () => turnPage(() => regionPage(Number(button.dataset.region)))));
 }
 
-function regionPage(index) {
+function regionPage(index, additional = false) {
   clearAncientScene();
   const region = catalogue.regions[index];
-  const midpoint = Math.ceil(region.legends.length / 2);
+  const legends = additional ? (region.additionalLegends || []) : region.legends;
+  const midpoint = Math.ceil(legends.length / 2);
   const makeEntries = (legends, offset) => legends.map((legend, localIndex) => {
     const legendIndex = offset + localIndex;
-    return `<button class="toc-entry region-entry" data-legend="${legendIndex}" aria-label="Buka kisah ${esc(legend.title)}"><span>${String(legend.episode).padStart(2, '0')}</span><b>${esc(legend.title)}</b><i></i><em>→</em></button>`;
+    return `<button class="toc-entry region-entry" data-legend="${legendIndex}" aria-label="Buka kisah ${esc(legend.title)}"><span>${additional ? '✦' : String(legend.episode).padStart(2, '0')}</span><b>${esc(legend.title)}</b><i></i><em>→</em></button>`;
   }).join('');
-  const leftEntries = makeEntries(region.legends.slice(0, midpoint), 0);
-  const rightEntries = makeEntries(region.legends.slice(midpoint), midpoint);
-  app.innerHTML = `<section class="reference-contents region-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-book-blank-v2.png" alt="Buku naskah Jawa terbuka untuk ${esc(region.name)}" /><div class="book-contents-overlay" aria-label="Daftar kisah ${esc(region.name)}"><section class="toc-page toc-page-left"><header><p>BAB DAERAH</p><h2>${esc(region.name)}</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian pertama">${leftEntries}</nav></section><section class="toc-page toc-page-right" aria-label="Kisah lanjutan ${esc(region.name)}"><header><p>${region.legends.length} KISAH LEGENDA</p><h2>LANJUTAN</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian lanjutan">${rightEntries}</nav></section></div></div></section>`;
-  document.querySelector('#reader-back').addEventListener('click', tableOfContents);
-  document.querySelectorAll('[data-legend]').forEach(button => button.addEventListener('click', () => turnPage(() => legendCover(index, Number(button.dataset.legend)))));
+  const leftEntries = makeEntries(legends.slice(0, midpoint), 0);
+  const rightEntries = makeEntries(legends.slice(midpoint), midpoint);
+  app.innerHTML = `<section class="reference-contents region-contents scene-enter"><button class="back-button" id="reader-back">← Kembali</button><div class="reference-book"><img src="/contents-book-blank-v2.png" alt="Buku naskah Jawa terbuka untuk ${esc(region.name)}" /><div class="book-contents-overlay" aria-label="Daftar kisah ${esc(region.name)}"><section class="toc-page toc-page-left"><header><p>${additional ? 'KISAH TAMBAHAN' : 'BAB DAERAH'}</p><h2>${esc(region.name)}</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian pertama">${leftEntries}</nav></section><section class="toc-page toc-page-right" aria-label="Kisah lanjutan ${esc(region.name)}"><header><p>${legends.length} KISAH LEGENDA</p><h2>LANJUTAN</h2><div>✦</div></header><nav aria-label="Kisah ${esc(region.name)} bagian lanjutan">${rightEntries}</nav></section></div></div></section>`;
+  document.querySelector('#reader-back').addEventListener('click', additional ? () => regionPage(index) : tableOfContents);
+  if (!additional && region.additionalLegends?.length) {
+    const button = document.createElement('button');
+    button.className = 'additional-legends-button';
+    button.textContent = `Kisah tambahan (${region.additionalLegends.length}) →`;
+    button.addEventListener('click', () => turnPage(() => regionPage(index, true)));
+    app.querySelector('.region-contents').append(button);
+  }
+  document.querySelectorAll('[data-legend]').forEach(button => button.addEventListener('click', () => turnPage(() => legendCover(index, Number(button.dataset.legend), additional))));
 }
 
-function legendCover(regionIndex, legendIndex) {
+function legendCover(regionIndex, legendIndex, additional = false) {
   clearAncientScene();
   const region = catalogue.regions[regionIndex];
-  const legend = region.legends[legendIndex];
-  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
+  const legend = (additional ? region.additionalLegends : region.legends)[legendIndex];
+  app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · ${additional ? 'KISAH TAMBAHAN' : `LEGENDA ${String(legend.episode).padStart(2, '0')}`} </p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
   initCoverParallax(app.querySelector('.legend-showcase'));
-  document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex));
+  document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex, additional));
   if (legend.manuscriptUrl) {
     const button = document.createElement('button');
     button.className = 'open-portal manuscript-open';
     button.textContent = 'Buka naskah →';
-    button.addEventListener('click', () => manuscriptPage(regionIndex, legendIndex));
+    button.addEventListener('click', () => manuscriptPage(regionIndex, legendIndex, additional));
     document.querySelector('.legend-showcase-title').append(button);
   }
 }
 
-function manuscriptPage(regionIndex, legendIndex) {
+function manuscriptPage(regionIndex, legendIndex, additional = false) {
   clearAncientScene();
-  const legend = catalogue.regions[regionIndex].legends[legendIndex];
+  const region = catalogue.regions[regionIndex];
+  const legend = (additional ? region.additionalLegends : region.legends)[legendIndex];
   const url = new URL(legend.manuscriptUrl);
   if (url.protocol !== 'https:' || url.hostname !== 'drive.google.com') {
-    legendCover(regionIndex, legendIndex);
+    legendCover(regionIndex, legendIndex, additional);
     return;
   }
   app.innerHTML = `<section class="manuscript-document scene-enter"><button class="back-button" id="reader-back">← Kembali ke cover</button><header><h2>${esc(legend.title)}</h2><a href="${esc(url.href)}" target="_blank" rel="noopener noreferrer">Mode baca ↗</a></header><iframe title="Naskah ${esc(legend.title)}" src="${esc(url.href)}" allow="fullscreen"></iframe></section>`;
-  document.querySelector('#reader-back').addEventListener('click', () => legendCover(regionIndex, legendIndex));
+  document.querySelector('#reader-back').addEventListener('click', () => legendCover(regionIndex, legendIndex, additional));
 }
 
 function readerLayout({ left, right, back }) {

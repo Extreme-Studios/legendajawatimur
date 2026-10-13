@@ -43,3 +43,6 @@
 
 .gending-toggle{position:fixed;z-index:40;right:24px;bottom:22px;width:42px;height:42px;border:1px solid #c59a52a8;border-radius:50%;padding:0;background:#120b07bd;color:#e7c77f;box-shadow:0 5px 20px #0009;backdrop-filter:blur(8px);font:700 1.1rem/1 "DM Sans",sans-serif;cursor:pointer;transition:background .2s ease,color .2s ease,transform .2s ease}.gending-toggle:hover{background:#281807e8;color:#ffe3a2;transform:translateY(-2px)}
 @media(max-width:640px){.gending-toggle{right:14px;bottom:14px;width:38px;height:38px;font-size:1rem}}
+
+.additional-legends-button{position:absolute;z-index:5;right:clamp(16px,4vw,52px);top:24px;border:1px solid #a57835;padding:10px 14px;background:#160d07dc;color:#edcf8a;font:600 .75rem "DM Sans",sans-serif;cursor:pointer}
+@media(max-width:700px){.additional-legends-button{top:64px;right:16px;padding:8px 10px;font-size:.65rem}}
