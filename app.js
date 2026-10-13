@@ -101,6 +101,25 @@ function legendCover(regionIndex, legendIndex) {
   app.innerHTML = `<section class="legend-showcase scene-enter"><img class="legend-ritual-table" src="/ritual-book-hero.png" alt="Meja ritual Jawa dengan buku kuno" /><div class="legend-showcase-shade"></div><button class="back-button" id="reader-back">← Kembali</button><div class="legend-volume"><div class="legend-volume-spine"></div><img class="legend-volume-cover" src="${legend.cover}" alt="Cover ${esc(legend.title)}" /></div><div class="legend-showcase-title"><p>${esc(region.name)} · LEGENDA ${String(legend.episode).padStart(2, '0')}</p><h2>${esc(legend.title)}</h2><div>✦</div><small>Cover kisah</small></div></section>`;
   initCoverParallax(app.querySelector('.legend-showcase'));
   document.querySelector('#reader-back').addEventListener('click', () => regionPage(regionIndex));
+  if (legend.manuscriptUrl) {
+    const button = document.createElement('button');
+    button.className = 'open-portal manuscript-open';
+    button.textContent = 'Buka naskah →';
+    button.addEventListener('click', () => manuscriptPage(regionIndex, legendIndex));
+    document.querySelector('.legend-showcase-title').append(button);
+  }
+}
+
+function manuscriptPage(regionIndex, legendIndex) {
+  clearAncientScene();
+  const legend = catalogue.regions[regionIndex].legends[legendIndex];
+  const url = new URL(legend.manuscriptUrl);
+  if (url.protocol !== 'https:' || url.hostname !== 'drive.google.com') {
+    legendCover(regionIndex, legendIndex);
+    return;
+  }
+  app.innerHTML = `<section class="manuscript-document scene-enter"><button class="back-button" id="reader-back">← Kembali ke cover</button><header><h2>${esc(legend.title)}</h2><a href="${esc(url.href)}" target="_blank" rel="noopener noreferrer">Mode baca ↗</a></header><iframe title="Naskah ${esc(legend.title)}" src="${esc(url.href)}" allow="fullscreen"></iframe></section>`;
+  document.querySelector('#reader-back').addEventListener('click', () => legendCover(regionIndex, legendIndex));
 }
 
 function readerLayout({ left, right, back }) {
